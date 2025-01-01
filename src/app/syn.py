@@ -25,6 +25,7 @@ class SyntaxAnalyzer:
         return True
     
     def match(self, expected_token_type, type=0):
+        print(f"    Matching {expected_token_type} with {self.tokens[self.current_token_index]}")
         if type == 1:
             current_token = self.tokens[self.current_token_index][1].split("_")[0]
         else :
@@ -110,11 +111,12 @@ class SyntaxAnalyzer:
 
     def parse_Expression(self):
         self.parse_ExpressionSimple()
-        if self.current_token_index < len(self.tokens) and self.tokens[self.current_token_index][1] == "RelOperator_L":
+        if self.current_token_index < len(self.tokens) and str(self.tokens[self.current_token_index][1]).startswith("RelOperator"):
+            print("PARSING : ",self.tokens[self.current_token_index])
             self.parse_OpRelExp()
 
     def parse_OpRelExp(self):
-        self.match("RelOperator_L")
+        self.match("RelOperator",1) # ! TOFIX
         self.parse_ExpressionSimple()
 
     def parse_ExpressionSimple(self):
@@ -130,7 +132,7 @@ class SyntaxAnalyzer:
 
     def parse_Terme(self):
         self.parse_Facteur()
-        if self.current_token_index < len(self.tokens) and self.tokens[self.current_token_index][1] == "MultOperator_et":
+        if self.current_token_index < len(self.tokens) and str(self.tokens[self.current_token_index][1]).startswith("MultOperator"):
             self.parse_OpMulFact()
 
     def parse_OpMulFact(self):
@@ -155,12 +157,16 @@ class SyntaxAnalyzer:
 
     def parse_Condition(self):
         if self.current_token_index < len(self.tokens) and self.tokens[self.current_token_index][1] == "left-parenthesis":
+            print(f">PARSING CONDITION (CON) : {self.tokens[self.current_token_index]}")
             self.match("left-parenthesis")
             self.parse_Condition()
             self.match("right-parenthesis")
-        else: 
+        else: #! TO FIX
+            print(f">PARSING CONDITION EXP RELOP EXP : {self.tokens[self.current_token_index]}")
             self.parse_Expression()
+            print(f"        INDEX CHECK : {self.tokens[self.current_token_index]}")
             self.match("RelOperator",1)
+            print(f"        INDEX CHECK : {self.tokens[self.current_token_index]}")
             self.parse_Expression()
             
     def parse_Vide(self):

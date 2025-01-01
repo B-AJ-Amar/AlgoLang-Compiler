@@ -11,10 +11,7 @@ variable
 
 debut
     repeter
-        b3 := b3 + c3
-    jusqu'à (a1 <> (c2) );
-    repeter jusqu'à (a1 <> (c2) );
-
-;;
+        b3 := b3 < b4 + c3
+    jusqu'à a1 <> c2 
 
 fin.
