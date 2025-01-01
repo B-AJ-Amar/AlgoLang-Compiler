@@ -25,7 +25,6 @@ class SyntaxAnalyzer:
         return True
     
     def match(self, expected_token_type, type=0):
-        print(f"    Matching {expected_token_type} with {self.tokens[self.current_token_index]}")
         if type == 1:
             current_token = self.tokens[self.current_token_index][1].split("_")[0]
         else :
@@ -99,7 +98,7 @@ class SyntaxAnalyzer:
             self.parse_InstructionAffectation()
         elif self.current_token_index < len(self.tokens) and self.tokens[self.current_token_index][1] == "Keyword_répéter":
             self.parse_InstructionRépéter()
-        elif self.current_token_index < len(self.tokens) and self.tokens[self.current_token_index][1] == "Keyword_debut":
+        elif self.current_token_index < len(self.tokens) and self.tokens[self.current_token_index][1] in ("Keyword_debut", "Semicolon"):
             self.parse_InstrComp()
         else:
             self.parse_Vide()
@@ -112,7 +111,6 @@ class SyntaxAnalyzer:
     def parse_Expression(self):
         self.parse_ExpressionSimple()
         if self.current_token_index < len(self.tokens) and str(self.tokens[self.current_token_index][1]).startswith("RelOperator"):
-            print("PARSING : ",self.tokens[self.current_token_index])
             self.parse_OpRelExp()
 
     def parse_OpRelExp(self):
@@ -157,7 +155,6 @@ class SyntaxAnalyzer:
 
     def parse_Condition(self):
         if self.current_token_index < len(self.tokens) and self.tokens[self.current_token_index][1] == "left-parenthesis":
-            print(f">PARSING CONDITION (CON) : {self.tokens[self.current_token_index]}")
             self.match("left-parenthesis")
             self.parse_Condition()
             self.match("right-parenthesis")

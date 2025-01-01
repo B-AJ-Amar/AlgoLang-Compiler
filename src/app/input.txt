@@ -10,8 +10,13 @@ variable
     x2,q9v4:caractere ;  
 
 debut
+        b3 := -b3 < b4 + c3 ;
+        b4 := b3 mod c3;
     repeter
-        b3 := -b3 < b4 + c3
+        debut
+            a1 := a1 + b2;
+            c1 := a1 * b2;
+        fin
     jusqu'à a1 <> c2  ;
 
 fin.
