@@ -162,11 +162,14 @@ class SyntaxAnalyzer:
             self.parse_Condition()
             self.match("right-parenthesis")
         else: #! TO FIX
-            print(f">PARSING CONDITION EXP RELOP EXP : {self.tokens[self.current_token_index]}")
+            temp_curent_index = self.current_token_index
             self.parse_Expression()
-            print(f"        INDEX CHECK : {self.tokens[self.current_token_index]}")
+            try:
+                self.match("RelOperator",1)
+            except:
+                self.current_token_index = temp_curent_index
+                self.parse_ExpressionSimple()
             self.match("RelOperator",1)
-            print(f"        INDEX CHECK : {self.tokens[self.current_token_index]}")
             self.parse_Expression()
             
     def parse_Vide(self):
