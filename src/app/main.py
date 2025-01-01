@@ -12,7 +12,6 @@ class Compiler:
     def compile(self):
         tokens = self.lexical_analyzer.lexical_analyzer(self.input_path, self.output_path)
         self.syntax_analyzer.tokens = tokens
-        print(self.syntax_analyzer.tokens)
         resault = self.syntax_analyzer.parse_ProgrammeAlgoLang()
         return resault
     

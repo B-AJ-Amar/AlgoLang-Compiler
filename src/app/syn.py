@@ -1,3 +1,5 @@
+
+# ! TO fix : the hard coded end values 
 class SyntaxAnalyzer:
     def __init__(self, tokens=None):
         self.tokens = tokens
@@ -22,8 +24,13 @@ class SyntaxAnalyzer:
         self.parse_ProgrammeAlgoLang()
         return True
     
-    def match(self, expected_token_type):
-        if self.current_token_index < len(self.tokens) and self.tokens[self.current_token_index][1] == expected_token_type:
+    def match(self, expected_token_type, type=0):
+        if type == 1:
+            current_token = self.tokens[self.current_token_index][1].split("_")[0]
+        else :
+            current_token = self.tokens[self.current_token_index][1]
+        
+        if self.current_token_index < len(self.tokens) and current_token == expected_token_type:
             self.current_token_index += 1
         else:
             raise SyntaxError(f"Expected {expected_token_type}, found {self.tokens[self.current_token_index][1]}")
@@ -50,7 +57,7 @@ class SyntaxAnalyzer:
 
     def parse_DéfinitionConstante(self):
         self.match("Name")
-        self.match("=")
+        self.match("RelOperator_E")
         self.parse_Constante()
         self.match("Semicolon")
 
@@ -70,7 +77,7 @@ class SyntaxAnalyzer:
             self.match("COMMA")
             self.match("Name")
         self.match("COLON")
-        self.match("TypeName_entier")
+        self.match("TypeName",1) # ! TOBE FIXED
 
     def parse_Constante(self):
         if self.current_token_index < len(self.tokens) and self.tokens[self.current_token_index][1] == "Number":
@@ -111,14 +118,14 @@ class SyntaxAnalyzer:
         self.parse_ExpressionSimple()
 
     def parse_ExpressionSimple(self):
-        if self.current_token_index < len(self.tokens) and self.tokens[self.current_token_index][1] == "AddOperator_plus":
-            self.match("AddOperator_plus")
+        if self.current_token_index < len(self.tokens) and str(self.tokens[self.current_token_index][1]).startswith("AddOperator") :
+            self.match("AddOperator",1)
         self.parse_Terme()
-        if self.current_token_index < len(self.tokens) and self.tokens[self.current_token_index][1] == "AddOperator_ou":
+        while self.current_token_index < len(self.tokens) and str(self.tokens[self.current_token_index][1]).startswith("AddOperator") :
             self.parse_OpAdTerm()
 
     def parse_OpAdTerm(self):
-        self.match("AddOperator_ou")
+        self.match("AddOperator",1)
         self.parse_Terme()
 
     def parse_Terme(self):
@@ -127,7 +134,7 @@ class SyntaxAnalyzer:
             self.parse_OpMulFact()
 
     def parse_OpMulFact(self):
-        self.match("MultOperator_et")
+        self.match("MultOperator",1)
         self.parse_Facteur()
 
     def parse_Facteur(self):
@@ -147,10 +154,15 @@ class SyntaxAnalyzer:
         self.parse_Condition()
 
     def parse_Condition(self):
-        self.parse_Expression()
-        self.match("RelOperator_L")
-        self.parse_Expression()
-
+        if self.current_token_index < len(self.tokens) and self.tokens[self.current_token_index][1] == "left-parenthesis":
+            self.match("left-parenthesis")
+            self.parse_Condition()
+            self.match("right-parenthesis")
+        else: 
+            self.parse_Expression()
+            self.match("RelOperator",1)
+            self.parse_Expression()
+            
     def parse_Vide(self):
         pass
 
