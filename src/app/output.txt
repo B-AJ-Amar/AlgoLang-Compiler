@@ -1,0 +1,10 @@
+programme|Keyword_programme|0
+x1|Name|10
+;|Semicolon|12
+debut|Keyword_debut|14
+x2|Name|20
+:=|ASSIGNMENT|23
+2|Number|26
+;|Semicolon|27
+fin|Keyword_fin|29
+.|END|32

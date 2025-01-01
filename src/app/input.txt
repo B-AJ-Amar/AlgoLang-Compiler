@@ -1,0 +1,1 @@
+programme x1; debut x2 := 2; fin.

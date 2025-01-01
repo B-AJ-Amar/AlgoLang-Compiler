@@ -1,0 +1,160 @@
+class SyntaxAnalyzer:
+    def __init__(self, tokens=None):
+        self.tokens = tokens
+        self.current_token_index = 0
+
+    def read_file(self, file_path):
+        "this should pass line by line get the tokens and put them in array of lists [(1,2,3),(4,5,6)...]"
+        # read line by line python
+        tokens = []
+        file = open(file_path, "r")
+        while True:
+            line = file.readline()
+            if not line: break
+            tokens.append(line.split("|"))
+        file.close()
+        return tokens
+    
+    
+    def syntax_analyzer(self, file_path="output.txt"):
+        tokens = self.read_file(file_path)
+        self.tokens = tokens
+        self.parse_ProgrammeAlgoLang()
+        return True
+    
+    def match(self, expected_token_type):
+        if self.current_token_index < len(self.tokens) and self.tokens[self.current_token_index][1] == expected_token_type:
+            self.current_token_index += 1
+        else:
+            raise SyntaxError(f"Expected {expected_token_type}, found {self.tokens[self.current_token_index][1]}")
+
+    def parse_ProgrammeAlgoLang(self):
+        self.match("Keyword_programme")
+        self.match("Name")
+        self.match("Semicolon")
+        self.parse_Corps()
+        self.match("END")
+
+    def parse_Corps(self):
+        if self.current_token_index < len(self.tokens) and self.tokens[self.current_token_index][1] == "Keyword_constante":
+            self.parse_PartieDéfinitionConstante()
+        if self.current_token_index < len(self.tokens) and self.tokens[self.current_token_index][1] == "Keyword_variable":
+            self.parse_PartieDéfinitionVariable()
+        self.parse_InstrComp()
+
+    def parse_PartieDéfinitionConstante(self):
+        self.match("Keyword_constante")
+        self.parse_DéfinitionConstante()
+        while self.current_token_index < len(self.tokens) and self.tokens[self.current_token_index][1] == "Name":
+            self.parse_DéfinitionConstante()
+
+    def parse_DéfinitionConstante(self):
+        self.match("Name")
+        self.match("=")
+        self.parse_Constante()
+        self.match("Semicolon")
+
+    def parse_PartieDéfinitionVariable(self):
+        self.match("Keyword_variable")
+        self.parse_DéfinitionVariable()
+        while self.current_token_index < len(self.tokens) and self.tokens[self.current_token_index][1] == "Name":
+            self.parse_DéfinitionVariable()
+
+    def parse_DéfinitionVariable(self):
+        self.parse_GroupeVariable()
+        self.match("Semicolon")
+
+    def parse_GroupeVariable(self):
+        self.match("Name")
+        while self.current_token_index < len(self.tokens) and self.tokens[self.current_token_index][1] == "COMMA":
+            self.match("COMMA")
+            self.match("Name")
+        self.match("COLON")
+        self.match("TypeName_entier")
+
+    def parse_Constante(self):
+        if self.current_token_index < len(self.tokens) and self.tokens[self.current_token_index][1] == "Number":
+            self.match("Number")
+        else:
+            self.match("Name")
+
+    def parse_InstrComp(self):
+        self.match("Keyword_debut")
+        self.parse_Instruction()
+        while self.current_token_index < len(self.tokens) and self.tokens[self.current_token_index][1] == "Semicolon":
+            self.match("Semicolon")
+            self.parse_Instruction()
+        self.match("Keyword_fin")
+
+    def parse_Instruction(self):
+        if self.current_token_index < len(self.tokens) and self.tokens[self.current_token_index][1] == "Name":
+            self.parse_InstructionAffectation()
+        elif self.current_token_index < len(self.tokens) and self.tokens[self.current_token_index][1] == "Keyword_répéter":
+            self.parse_InstructionRépéter()
+        elif self.current_token_index < len(self.tokens) and self.tokens[self.current_token_index][1] == "Keyword_debut":
+            self.parse_InstrComp()
+        else:
+            self.parse_Vide()
+
+    def parse_InstructionAffectation(self):
+        self.match("Name")
+        self.match("ASSIGNMENT")
+        self.parse_Expression()
+
+    def parse_Expression(self):
+        self.parse_ExpressionSimple()
+        if self.current_token_index < len(self.tokens) and self.tokens[self.current_token_index][1] == "RelOperator_L":
+            self.parse_OpRelExp()
+
+    def parse_OpRelExp(self):
+        self.match("RelOperator_L")
+        self.parse_ExpressionSimple()
+
+    def parse_ExpressionSimple(self):
+        if self.current_token_index < len(self.tokens) and self.tokens[self.current_token_index][1] == "AddOperator_plus":
+            self.match("AddOperator_plus")
+        self.parse_Terme()
+        if self.current_token_index < len(self.tokens) and self.tokens[self.current_token_index][1] == "AddOperator_ou":
+            self.parse_OpAdTerm()
+
+    def parse_OpAdTerm(self):
+        self.match("AddOperator_ou")
+        self.parse_Terme()
+
+    def parse_Terme(self):
+        self.parse_Facteur()
+        if self.current_token_index < len(self.tokens) and self.tokens[self.current_token_index][1] == "MultOperator_et":
+            self.parse_OpMulFact()
+
+    def parse_OpMulFact(self):
+        self.match("MultOperator_et")
+        self.parse_Facteur()
+
+    def parse_Facteur(self):
+        if self.current_token_index < len(self.tokens) and self.tokens[self.current_token_index][1] == "Number":
+            self.parse_Constante()
+        elif self.current_token_index < len(self.tokens) and self.tokens[self.current_token_index][1] == "Name":
+            self.match("Name")
+        else:
+            self.match("left-parenthesis")
+            self.parse_Expression()
+            self.match("right-parenthesis")
+
+    def parse_InstructionRépéter(self):
+        self.match("Keyword_répéter")
+        self.parse_Instruction()
+        self.match("Keyword_jusqua")
+        self.parse_Condition()
+
+    def parse_Condition(self):
+        self.parse_Expression()
+        self.match("RelOperator_L")
+        self.parse_Expression()
+
+    def parse_Vide(self):
+        pass
+
+# Example usage
+# analyzer = SyntaxAnalyzer(lex("programme x1; debut x2 := 2; fin."))
+# analyzer.parse_ProgrammeAlgoLang()
+# print("Parsing successful!")
