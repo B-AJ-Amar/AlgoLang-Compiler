@@ -1,5 +1,19 @@
-programme x1;
-variable x2, y3 : entier;
+programme a1b2c3; 
+
+
+variable 
+    b1,c3b3:reel; 
+    x2,v9v8f4:entier ;  
+    x2,q9v4:caractere ;  
+
 debut
-x4 := 5;
+        b3 := -b3 < b4 + c3 ;
+        b4 := b3 mod c3;
+    repeter
+        debut
+            a1 := a1 + b2;
+            c1 := a1 * b2;
+        fin
+    jusqu'à a1 <> c2  ;
+
 fin.

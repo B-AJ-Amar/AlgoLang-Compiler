@@ -3,13 +3,17 @@ from automate import rules, final_states
 class LexicalAnalizer:
     def __init__(self, rules=rules, final_states=final_states):
         self.rules = rules
-        self.final_states = final_states   
+        self.final_states = final_states  
+        self.jeton = [] 
     
         
-    def lexical_analyzer(self, file_path="./input.txt",output_path="./token.txt", save=True):
+    def lexical_analyzer(self, file_path="./input.txt",output_path="./logs/token.txt", save=True,verbose=True):
         code = self.read_file(file_path)
         tokens =  self.run(code)  
+        jeton = self.save_JETON(tokens)
+        self.jeton = jeton
         if save: self.save_tokens(tokens, output_path)
+        
         return tokens
     
     
@@ -18,12 +22,19 @@ class LexicalAnalizer:
             return file.read()
               
       
-    def save_tokens(self, tokens, file_path="./token.txt"):
+    def save_tokens(self, tokens, file_path="./logs/token.txt"):
         with open(file_path, "w") as file:
             for token in tokens:
                 file.write(f"{token[0]}|{token[1]}\n")
-                
-                
+    
+    def save_JETON(self, tokens, file_path="./logs/table_de_symboles.txt"):
+        tokens = [token for token in tokens if token[1] in ["Name", "Number"]]
+        tokens = [(token[0], "constante" if token[1] == "Name" else "Nombre") for token in tokens]
+        with open(file_path, "w") as file:
+            for token in tokens:
+                    file.write(f"{token[0]}|{token[1]}\n")
+        return tokens
+                    
     def run(self, code):
         code = code.lower()
         tokens = []
