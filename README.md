@@ -80,7 +80,7 @@ Defines the rules and final states for lexical analysis. Uses finite state machi
 ## Example Usage
 Input Code (`input.txt`):
 
-```algol
+```bash
 programme x1;
 variable x2, y3 : entier;
 debut
