@@ -1,0 +1,17 @@
+programme|Keyword_programme
+x1|Name
+;|Semicolon
+variable|Keyword_variable
+x2|Name
+,|COMMA
+y3|Name
+:|COLON
+entier|TypeName_entier
+;|Semicolon
+debut|Keyword_debut
+x4|Name
+:=|ASSIGNMENT
+5|Number
+;|Semicolon
+fin|Keyword_fin
+.|END
