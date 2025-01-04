@@ -29,7 +29,7 @@ src/
 The compiler can now take input and output file paths via command-line arguments (its optional). Use the following command:
 
 ```bash
-python main.py -i <input_file_path> -o <output_file_path>
+python main.py -i <input_file_path> -o <output_file_path> -v <varbose>
 ```
 #### Default Values
 
@@ -37,48 +37,61 @@ python main.py -i <input_file_path> -o <output_file_path>
 
 `<output_file_path>` =  `token.txt`
 
+`<varbose>` =  True
+
 
 
 ## Files
 
-### main.py
+### Code Files
+#### main.py
 The main entry point for the compiler. It:
 - Reads the input file (`input.txt`).
 - Invokes the lexical analyzer to tokenize the code.
 - Passes the tokens to the syntax analyzer for validation.
 
 
-#### Key Methods
+##### Key Methods
 - `__init__(self, input_path, output_path)`: Initializes file paths and analyzers.
 - `compile(self)`: Performs compilation by invoking the lexical and syntax analyzers.
 
-### lex.py
+#### lex.py
 Implements the **Lexical Analyzer** to tokenize the input code based on rules defined in `automate.py`.
 
-#### Key Methods
+##### Key Methods
 - `read_file(self, file_path)`: Reads the input file.
 - `lexical_analyzer(self, file_path, output_path, save)`: Tokenizes the input file .
 - `save_tokens(self, tokens, file_path)`: Writes tokens to the output file.
 - `run(self, code)`: Run eveything together.
 
-### syn.py
+#### syn.py
 Implements the **Syntax Analyzer**, which validates the structure of tokenized code based on the grammar of the language.
 
-#### Key Methods
+##### Key Methods
 - `syntax_analyzer(self, file_path)`: Validates the tokens from the lexical analyzer.
 - `match(self, expected_token_type, type)`: Matches current token with expected type.
 - Parsing methods (e.g., `parse_ProgrammeAlgoLang`, `parse_Corps`) to validate the syntax of various constructs.
 
-### automate.py
+#### automate.py
 Defines the rules and final states for lexical analysis. Uses finite state machine logic to determine valid tokens and their classifications.
 
-#### Key Components
+##### Key Components
 - `rules`: Dictionary defining transitions for the state machine.
 - `final_states`: Dictionary mapping final states to token types.
 
 
+### Logs Files
+
+- `token.txt` : contains the tokens from the lexical analyzer
+
+- `table_de_symboles.txt` : contains table de symbols 
+
+- `regles.txt` : contains the synatixic analyzer call stack
+
+
 ## Example Usage
-Input Code (`input.txt`):
+
+**Input Code (`input.txt`):**
 
 ```bash
 programme x1;
@@ -88,36 +101,70 @@ x4 := 5;
 fin.
 ```
 
-Run the compiler:
+**Run the compiler:**
 
 ```bash
 python main.py
 ```
 
-Output (`token.txt`):
+**Output  :**
 
-```bash
-programme|Keyword_programme
-x1|Name
-;|Semicolon
-variable|Keyword_variable
-x2|Name
-,|COMMA
-y3|Name
-:|COLON
-entier|TypeName_entier
-;|Semicolon
-debut|Keyword_debut
-x4|Name
-:=|ASSIGNMENT
-5|Number
-;|Semicolon
-fin|Keyword_fin
-.|END
-```
+- (`logs/token.txt`):
 
-stdout (`command line`)
+  ```bash
+  programme|Keyword_programme
+  x1|Name
+  ;|Semicolon
+  variable|Keyword_variable
+  x2|Name
+  ,|COMMA
+  y3|Name
+  :|COLON
+  entier|TypeName_entier
+  ;|Semicolon
+  debut|Keyword_debut
+  x4|Name
+  :=|ASSIGNMENT
+  5|Number
+  ;|Semicolon
+  fin|Keyword_fin
+  .|END
+  ```
 
-```bash
-Compilation done successfully
-```
+- (`logs/table_de_symboles.txt`):
+
+  ```bash
+  x1|constante
+  x2|constante
+  y3|constante
+  x4|constante
+  5|Nombre
+
+  ```
+
+- (`logs/regles.txt`):
+
+  ```txt
+  <ProgrammeAlgoLang>::= programme <NomProgramme> ; <Corps> .
+  <Corps>::=[<PartieDéfinitionConstante>][<PartieDéfinitionVariable>] <InstrComp>
+  <PartieDéfinitionVariable>::= variable <DéfinitionVariable> {<DéfinitionVariable>}
+  <DéfinitionVariable>::=<GroupeVariable>;
+  <GroupeVariable>::=<NomVariable>{,<NomVariable>}:<Type>
+  <InstrComp>::= debut <Instruction> {;<Instruction>} fin
+  <Instruction>::=<InstructionAffectation>|<InstructionRépéter>|<InstrComp>|<Vide>
+  <InstructionAffectation>::=<NomVariable>:=<Expression>
+  <Expression>::=<ExpressionSimple> [<OpRelExp> <ExpressionSimple>]
+  <ExpressionSimple>::=[<OperateurSigne>]<Terme> {<OpAdTerm> <Terme>}
+  <Terme>::=<Facteur> {<OpMulFact> <Facteur>}
+  <Facteur>::=<Constante>|<NomVariable>|(<Expression>)
+  <Constante>::= <Nombre> | <NomConstante>
+  <Instruction>::=<InstructionAffectation>|<InstructionRépéter>|<InstrComp>|<Vide>
+  <Vide>::=''
+
+  ```
+
+- (`command line`)
+
+  ```bash
+  Compilation done successfully
+  ```
